@@ -14,7 +14,8 @@ import timnekk.orderflow.misc.BaseEntity;
 public class Dish extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dishes_id_seq")
+    @SequenceGenerator(name = "dishes_id_seq", sequenceName = "dishes_id_seq", allocationSize = 1)
     private Integer id;
 
     @Column(nullable = false)

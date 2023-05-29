@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-orders-table
+      author: TimNekk
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+              - column:
+                  name: status
+                  type: varchar(11)
+                  defaultValue: PENDING
+              - column:
+                  name: special_requests
+                  type: text
+  - changeSet:
+      id: add-fk-on-user_id-in-orders-table
+      author: TimNekk
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_orders_user_id
+            baseTableName: orders
+            referencedColumnNames: id
+            referencedTableName: users
+            baseColumnNames: user_id
+            onUpdate: CASCADE
+            onDelete: CASCADE

@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-order_dish-table
+      author: TimNekk
+      changes:
+        - createTable:
+            tableName: order_dish
+            columns:
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: order_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: dish_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: float
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: add-foreign-key-constraint-to-order_dish-table
+      author: TimNekk
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_order_dish_order_id
+            baseTableName: order_dish
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            onUpdate: CASCADE
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_order_dish_dish_id
+            baseTableName: order_dish
+            baseColumnNames: dish_id
+            referencedTableName: dishes
+            referencedColumnNames: id
+            onUpdate: CASCADE
+            onDelete: CASCADE

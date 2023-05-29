@@ -6,7 +6,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   rabbitmq:
@@ -14,6 +14,8 @@ spring:
     port: ${RABBITMQ_PORT}
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASS}
+  liquibase:
+    enabled: true
 
 jwt:
   header: Authorization
