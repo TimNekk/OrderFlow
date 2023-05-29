@@ -1,0 +1,72 @@
+version: "3"
+
+services:
+  web:
+    image: "docker-spring-boot-postgres:latest"
+    build:
+      context: .
+    env_file:
+      - .env
+    container_name: order_flow_web
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    restart: always
+    networks:
+      - app
+
+
+  db:
+    container_name: order_flow_db
+    image: postgres
+    ports:
+      - "${DB_EXPOSE_PORT:-5432}:${DB_PORT:-5432}"
+    restart: always
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    networks:
+      - app
+
+  rabbitmq:
+    container_name: order_flow_rabbitmq
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+    ports:
+      - "${RABBITMQ_EXPOSE_PORT:-5672}:${RABBITMQ_PORT:-5672}"
+      - "${RABBITMQ_EXPOSE_UI_PORT:-15672}:${RABBITMQ_UI_PORT:-15672}"
+    restart: always
+    networks:
+      - app
+
+  pgadmin:
+    container_name: order_flow_pgadmin
+    image: dpage/pgadmin4:7.1
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "${PGADMIN_EXPOSE_PORT:-5050}:${PGADMIN_PORT:-80}"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge
